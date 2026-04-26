@@ -7,7 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateListingBody } from "@workspace/api-zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Building, MapPin, Ruler, Users, Info } from "lucide-react";
@@ -316,17 +317,16 @@ export default function PublishListing() {
                 />
               </div>
 
-              <FormItem>
-                <FormLabel>Équipements (séparés par des virgules)</FormLabel>
-                <FormControl>
-                  <Input 
-                    placeholder="Ex: Piscine, Balcon, Ascenseur, Parking" 
-                    value={features}
-                    onChange={(e) => setFeatures(e.target.value)}
-                  />
-                </FormControl>
-                <FormDescription>Optionnel</FormDescription>
-              </FormItem>
+              <div className="space-y-2">
+                <Label htmlFor="features-input">Équipements (séparés par des virgules)</Label>
+                <Input
+                  id="features-input"
+                  placeholder="Ex: Piscine, Balcon, Ascenseur, Parking"
+                  value={features}
+                  onChange={(e) => setFeatures(e.target.value)}
+                />
+                <p className="text-[0.8rem] text-muted-foreground">Optionnel</p>
+              </div>
             </CardContent>
           </Card>
 
