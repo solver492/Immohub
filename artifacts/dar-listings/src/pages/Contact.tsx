@@ -47,7 +47,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="space-y-4">
             {[
-              { icon: Mail, label: "Email", value: "contact@dar-listings.ma" },
+              { icon: Mail, label: "Email", value: "contact@immo-hub.ma" },
               { icon: Phone, label: "Téléphone", value: "+212 5 22 00 00 00" },
               { icon: MapPin, label: "Adresse", value: "12 rue Tahar Sebti, 20000 Casablanca" },
               { icon: Clock, label: "Horaires", value: "Lun - Ven : 9h - 18h" },

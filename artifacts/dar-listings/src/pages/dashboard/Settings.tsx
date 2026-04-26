@@ -12,7 +12,7 @@ export default function Settings() {
   const { toast } = useToast();
   const [profile, setProfile] = useState({
     name: "Youssef Bennani",
-    email: "youssef@dar-listings.ma",
+    email: "youssef@immo-hub.ma",
     phone: "+212 6 12 34 56 78",
     agency: "Bennani Immobilier",
     bio: "Agent immobilier à Casablanca depuis 12 ans.",

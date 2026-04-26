@@ -247,6 +247,41 @@ export default function ListingDetail() {
             </div>
           </div>
 
+          {/* Video */}
+          {listing.videoUrl && (() => {
+            const url = listing.videoUrl;
+            let embed: string | null = null;
+            const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+            const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+            if (yt) embed = `https://www.youtube.com/embed/${yt[1]}`;
+            else if (vimeo) embed = `https://player.vimeo.com/video/${vimeo[1]}`;
+            return (
+              <section>
+                <h2 className="text-2xl font-serif font-bold text-primary mb-4">Vidéo du bien</h2>
+                {embed ? (
+                  <div className="aspect-video rounded-xl overflow-hidden bg-black">
+                    <iframe
+                      src={embed}
+                      title="Vidéo du bien"
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-secondary underline break-all"
+                  >
+                    {url}
+                  </a>
+                )}
+              </section>
+            );
+          })()}
+
           {/* Description */}
           <section>
             <h2 className="text-2xl font-serif font-bold text-primary mb-4">Description</h2>

@@ -81,7 +81,7 @@ const bottomLinks: LinkItem[] = [
   { label: "Page d'accueil", href: "/", icon: HomeIcon },
   { label: "Estimer votre bien", href: "/estimer", icon: Banknote },
   { label: "Immobilier neuf", href: "/immobilier-neuf", icon: Building2 },
-  { label: "À propos de Dar Listings", href: "/a-propos", icon: Info },
+  { label: "À propos de Immo-hub", href: "/a-propos", icon: Info },
   { label: "Contactez-nous", href: "/contact", icon: MessageSquare },
 ];
 
@@ -103,7 +103,7 @@ export function Navbar() {
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-2">
             <span className="font-serif text-2xl font-bold tracking-tight text-primary">
-              Dar Listings
+              Immo-hub
             </span>
           </Link>
           <nav className="hidden lg:flex gap-6">

@@ -247,7 +247,7 @@ export default function Home() {
         <div className="container relative z-10 text-center max-w-3xl">
           <h2 className="text-4xl font-serif font-bold mb-6">Vous êtes propriétaire ?</h2>
           <p className="text-lg text-secondary-foreground/90 mb-10">
-            Publiez votre annonce sur Dar Listings et touchez des milliers d'acheteurs et de locataires potentiels à travers le Maroc.
+            Publiez votre annonce sur Immo-hub et touchez des milliers d'acheteurs et de locataires potentiels à travers le Maroc.
           </p>
           <Button size="lg" variant="secondary" className="bg-white text-secondary hover:bg-white/90 font-bold px-8 py-6 text-lg" onClick={() => setLocation('/publier')}>
             Publier une annonce

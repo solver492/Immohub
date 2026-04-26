@@ -11,8 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Building, MapPin, Ruler, Users, Info } from "lucide-react";
-import { useState } from "react";
+import { Building, MapPin, Ruler, Users, Info, ImagePlus, Video, X } from "lucide-react";
+import { useRef, useState } from "react";
 
 export default function PublishListing() {
   const [, setLocation] = useLocation();
@@ -35,6 +35,7 @@ export default function PublishListing() {
       bathrooms: 0,
       area: 0,
       images: [] as string[],
+      videoUrl: "",
       features: [] as string[],
       contactName: "",
       contactPhone: "",
@@ -43,18 +44,49 @@ export default function PublishListing() {
     },
   });
 
+  const [images, setImages] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const onPickFiles = async (files: FileList | null) => {
+    if (!files) return;
+    const next: string[] = [];
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) continue;
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Image trop volumineuse",
+          description: `${file.name} dépasse 5 Mo et a été ignorée.`,
+          variant: "destructive",
+        });
+        continue;
+      }
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      next.push(dataUrl);
+    }
+    setImages((prev) => [...prev, ...next].slice(0, 12));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeImage = (idx: number) =>
+    setImages((prev) => prev.filter((_, i) => i !== idx));
+
   const onSubmit = (data: any) => {
     // Process features string into array
     const featuresArray = features
       .split(",")
       .map(f => f.trim())
       .filter(f => f.length > 0);
-      
-    // Add placeholder image if none provided
+
     const payload = {
       ...data,
       features: featuresArray,
-      images: data.images.length ? data.images : ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop"]
+      images: images.length ? images : ["https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop"],
+      videoUrl: data.videoUrl?.trim() ? data.videoUrl.trim() : null,
     };
 
     createListing.mutate({ data: payload }, {
@@ -333,7 +365,89 @@ export default function PublishListing() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 font-serif text-2xl">
-                <Users className="text-secondary" /> 4. Contact
+                <ImagePlus className="text-secondary" /> 4. Photos & vidéo
+              </CardTitle>
+              <CardDescription>
+                Ajoutez jusqu'à 12 photos (max 5 Mo) et un lien vidéo YouTube ou Vimeo.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <Label className="mb-2 block">Photos du bien</Label>
+                <div className="border-2 border-dashed border-border rounded-xl p-6 text-center hover-elevate transition">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => onPickFiles(e.target.files)}
+                    data-testid="input-image-upload"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-col items-center gap-2 mx-auto text-muted-foreground hover:text-secondary transition"
+                  >
+                    <ImagePlus size={32} />
+                    <span className="font-medium">Cliquez pour téléverser</span>
+                    <span className="text-xs">PNG, JPG, WEBP — jusqu'à 12 photos</span>
+                  </button>
+                </div>
+
+                {images.length > 0 && (
+                  <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mt-4">
+                    {images.map((src, idx) => (
+                      <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-muted group">
+                        <img src={src} alt={`Photo ${idx + 1}`} className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(idx)}
+                          className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
+                          aria-label="Supprimer la photo"
+                        >
+                          <X size={14} />
+                        </button>
+                        {idx === 0 && (
+                          <span className="absolute bottom-1 left-1 bg-secondary text-secondary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            Couverture
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <FormField
+                control={form.control}
+                name="videoUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Video size={16} /> Lien vidéo (YouTube, Vimeo, etc.)
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">
+                      Optionnel — la vidéo sera intégrée dans la page de l'annonce.
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 font-serif text-2xl">
+                <Users className="text-secondary" /> 5. Contact
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">

@@ -24,9 +24,9 @@ export default function About() {
       {/* Content */}
       <section className="py-20 container max-w-4xl">
         <div className="prose prose-lg prose-slate max-w-none text-foreground/80">
-          <h2 className="text-3xl font-serif font-bold text-primary mb-6">L'histoire de Dar Listings</h2>
+          <h2 className="text-3xl font-serif font-bold text-primary mb-6">L'histoire de Immo-hub</h2>
           <p className="mb-6">
-            L'immobilier au Maroc mérite mieux qu'une simple plateforme de petites annonces. Chez Dar Listings, nous croyons que la recherche d'un foyer ou d'un investissement est une étape cruciale qui requiert une expérience fluide, esthétique et rassurante.
+            L'immobilier au Maroc mérite mieux qu'une simple plateforme de petites annonces. Chez Immo-hub, nous croyons que la recherche d'un foyer ou d'un investissement est une étape cruciale qui requiert une expérience fluide, esthétique et rassurante.
           </p>
           <p className="mb-10">
             Née de la volonté de moderniser le marché, notre plateforme rassemble particuliers exigeants et professionnels de confiance autour d'une interface pensée pour mettre en valeur chaque bien immobilier. Des riads historiques de la médina aux appartements contemporains de la corniche, nous offrons une vitrine exceptionnelle à la richesse du parc immobilier marocain.

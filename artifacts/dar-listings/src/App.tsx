@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { Samsar } from "@/components/Samsar";
 
 // Pages
 import Home from "@/pages/Home";
@@ -69,6 +70,7 @@ function Router() {
         </Switch>
       </div>
       <Footer />
+      <Samsar />
     </div>
   );
 }

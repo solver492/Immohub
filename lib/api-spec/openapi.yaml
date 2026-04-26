@@ -3,7 +3,7 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: Dar Listings real estate marketplace API
+  description: Immo-hub real estate marketplace API
 servers:
   - url: /api
     description: Base API path
@@ -262,7 +262,8 @@ components:
         area: { type: integer, description: "Surface area in square meters" }
         images:
           type: array
-          items: { type: string, description: "Image URL" }
+          items: { type: string, description: "Image URL or data URL" }
+        videoUrl: { type: string, nullable: true, description: "YouTube/Vimeo or other video URL" }
         features:
           type: array
           items: { type: string }
@@ -316,6 +317,7 @@ components:
         images:
           type: array
           items: { type: string }
+        videoUrl: { type: string, nullable: true }
         features:
           type: array
           items: { type: string }

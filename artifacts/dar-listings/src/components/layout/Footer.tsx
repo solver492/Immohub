@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="bg-primary text-primary-foreground py-12 md:py-16">
       <div className="container grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="space-y-4">
-          <h3 className="font-serif text-2xl font-bold tracking-tight">Dar Listings</h3>
+          <h3 className="font-serif text-2xl font-bold tracking-tight">Immo-hub</h3>
           <p className="text-primary-foreground/70 text-sm max-w-xs">
             Le marché immobilier de confiance au Maroc. Trouvez votre prochaine maison ou investissement avec nous.
           </p>
@@ -35,7 +35,7 @@ export function Footer() {
         </div>
       </div>
       <div className="container mt-12 pt-8 border-t border-primary-foreground/10 text-center text-sm text-primary-foreground/50">
-        &copy; {new Date().getFullYear()} Dar Listings. Tous droits réservés.
+        &copy; {new Date().getFullYear()} Immo-hub. Tous droits réservés.
       </div>
     </footer>
   );

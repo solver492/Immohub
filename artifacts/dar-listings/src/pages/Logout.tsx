@@ -14,7 +14,7 @@ export default function Logout() {
           <div>
             <h1 className="text-2xl md:text-3xl font-serif font-bold text-primary mb-2">À bientôt !</h1>
             <p className="text-muted-foreground">
-              Vous avez été déconnecté avec succès. Merci de votre visite sur Dar Listings.
+              Vous avez été déconnecté avec succès. Merci de votre visite sur Immo-hub.
             </p>
           </div>
           <div className="flex flex-col gap-2">

@@ -23,6 +23,7 @@ export const listingsTable = pgTable("listings", {
   bathrooms: integer("bathrooms").notNull().default(0),
   area: integer("area").notNull().default(0),
   images: text("images").array().notNull().default([]),
+  videoUrl: text("video_url"),
   features: text("features").array().notNull().default([]),
   contactName: text("contact_name").notNull(),
   contactPhone: text("contact_phone").notNull(),

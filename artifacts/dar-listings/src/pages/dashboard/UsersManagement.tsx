@@ -22,10 +22,10 @@ import { useToast } from "@/hooks/use-toast";
 type User = { id: string; name: string; email: string; role: "Admin" | "Agent" | "Lecture seule"; status: "active" | "pending" };
 
 const initial: User[] = [
-  { id: "u1", name: "Youssef Bennani", email: "youssef@dar-listings.ma", role: "Admin", status: "active" },
-  { id: "u2", name: "Salma Idrissi", email: "salma@dar-listings.ma", role: "Agent", status: "active" },
-  { id: "u3", name: "Karim Tazi", email: "karim@dar-listings.ma", role: "Agent", status: "pending" },
-  { id: "u4", name: "Nora El Amrani", email: "nora@dar-listings.ma", role: "Lecture seule", status: "active" },
+  { id: "u1", name: "Youssef Bennani", email: "youssef@immo-hub.ma", role: "Admin", status: "active" },
+  { id: "u2", name: "Salma Idrissi", email: "salma@immo-hub.ma", role: "Agent", status: "active" },
+  { id: "u3", name: "Karim Tazi", email: "karim@immo-hub.ma", role: "Agent", status: "pending" },
+  { id: "u4", name: "Nora El Amrani", email: "nora@immo-hub.ma", role: "Lecture seule", status: "active" },
 ];
 
 const initials = (name: string) =>
