@@ -1,0 +1,116 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "Ciey3iwQNq3FNIOrhIQSl"
+uri = "file://artifacts/dar-listings/src/assets/hero.png"
+type = "image"
+title = "Hero riad interior"
+
+[[generated]]
+id = "F5y3yoBpUtwYQQg30d6KB"
+uri = "file://artifacts/dar-listings/src/assets/casablanca.png"
+type = "image"
+title = "Casablanca cityscape"
+
+[[generated]]
+id = "mL9UQ7X7Zdfg3aAKqba_M"
+uri = "file://artifacts/dar-listings/src/assets/rabat.png"
+type = "image"
+title = "Rabat cityscape"
+
+[[generated]]
+id = "8avCU54PZWZipYWh_6Chs"
+uri = "file://artifacts/dar-listings/src/assets/marrakech.png"
+type = "image"
+title = "Marrakech street"
+
+[[generated]]
+id = "t0LlOqm2Ga_AxyasTMUh3"
+uri = "file://artifacts/dar-listings/src/assets/tanger.png"
+type = "image"
+title = "Tanger coastal"
+
+[[generated]]
+id = "eTwAPLO618aH2qqHgXOVh"
+uri = "file://artifacts/dar-listings/src/assets/fes.png"
+type = "image"
+title = "Fes architecture"
+
+[[generated]]
+id = "ZWG_YWefwDgGc35j_Y6TC"
+uri = "file://artifacts/dar-listings/src/assets/agadir.png"
+type = "image"
+title = "Agadir beach"
+
+[[generated]]
+id = "ePxTu6O4y56Yka1Gp30C8"
+uri = "file://artifacts/dar-listings/src/assets/about-hero.png"
+type = "image"
+title = "About page hero"
+
+[[generated]]
+id = "V4gTeJp16Jf0ofYTsAEno"
+uri = "file://artifacts/dar-listings/src/assets/fallback.png"
+type = "image"
+title = "Fallback property"
+
+[[generated]]
+id = "7N_tLjF4AHe0Iqy2Mwrcm"
+uri = "file://artifacts/dar-listings/src/assets/seed/villa-casablanca.png"
+type = "image"
+title = "villa casablanca exterior"
+
+[[generated]]
+id = "ZmQeQDtPcCAAbtiUR_zpV"
+uri = "file://artifacts/dar-listings/src/assets/seed/apartment-rabat.png"
+type = "image"
+title = "modern apartment interior"
+
+[[generated]]
+id = "dAsR6gPBoqGusyVRlmqRA"
+uri = "file://artifacts/dar-listings/src/assets/seed/riad-marrakech.png"
+type = "image"
+title = "riad marrakech courtyard"
+
+[[generated]]
+id = "MyneOGEBRG44x96QnMAYi"
+uri = "file://artifacts/dar-listings/src/assets/seed/villa-tangier.png"
+type = "image"
+title = "villa tangier coast"
+
+[[generated]]
+id = "KFh5V9HjJ2Y0mtx5tIy10"
+uri = "file://artifacts/dar-listings/src/assets/seed/studio-modern.png"
+type = "image"
+title = "modern studio apartment"
+
+[[generated]]
+id = "haeK_pjhZNknJb8pzCq48"
+uri = "file://artifacts/dar-listings/src/assets/seed/kitchen-modern.png"
+type = "image"
+title = "modern kitchen"
+
+[[generated]]
+id = "NloxE8SngMzXbyJqOj073"
+uri = "file://artifacts/dar-listings/src/assets/seed/land-morocco.png"
+type = "image"
+title = "moroccan land plot"
+
+[[generated]]
+id = "UhewJYO5jhWKYoaruBlrh"
+uri = "file://artifacts/dar-listings/src/assets/seed/office-commercial.png"
+type = "image"
+title = "modern office building"
+
+[[generated]]
+id = "y3SUg-wZac4nfL73CzJTf"
+uri = "file://artifacts/dar-listings/src/assets/seed/bedroom-elegant.png"
+type = "image"
+title = "elegant bedroom"
+
+[[generated]]
+id = "zkjNd-5MfRDNcfsbpk6wo"
+uri = "file://artifacts/dar-listings/src/assets/seed/house-agadir.png"
+type = "image"
+title = "agadir beachfront house"

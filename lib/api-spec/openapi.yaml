@@ -3,20 +3,27 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Dar Listings real estate marketplace API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: listings
+    description: Real estate listing operations
+  - name: stats
+    description: Marketplace statistics and aggregates
+  - name: cities
+    description: City directory
+  - name: inquiries
+    description: Contact inquiries about listings
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,13 +31,379 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /listings:
+    get:
+      operationId: listListings
+      tags: [listings]
+      summary: List property listings with filters
+      parameters:
+        - name: search
+          in: query
+          schema: { type: string }
+        - name: city
+          in: query
+          schema: { type: string }
+        - name: transaction
+          in: query
+          schema:
+            type: string
+            enum: [sale, rent]
+        - name: propertyType
+          in: query
+          schema:
+            type: string
+            enum: [apartment, house, villa, riad, land, commercial, office, studio]
+        - name: minPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: maxPrice
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: minBedrooms
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: minArea
+          in: query
+          schema: { type: integer, minimum: 0 }
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [recent, priceAsc, priceDesc, areaDesc]
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100 }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0 }
+      responses:
+        "200":
+          description: Paginated listings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListingPage"
+    post:
+      operationId: createListing
+      tags: [listings]
+      summary: Publish a new listing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateListing"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+
+  /listings/featured:
+    get:
+      operationId: getFeaturedListings
+      tags: [listings]
+      summary: Editor-curated featured listings
+      responses:
+        "200":
+          description: Featured
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+
+  /listings/recent:
+    get:
+      operationId: getRecentListings
+      tags: [listings]
+      summary: Most recently published listings
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 24 }
+      responses:
+        "200":
+          description: Recent listings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+
+  /listings/{id}:
+    get:
+      operationId: getListing
+      tags: [listings]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: One listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Listing"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteListing
+      tags: [listings]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "204":
+          description: Deleted
+
+  /listings/{id}/similar:
+    get:
+      operationId: getSimilarListings
+      tags: [listings]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Similar listings nearby
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Listing"
+
+  /stats/overview:
+    get:
+      operationId: getStatsOverview
+      tags: [stats]
+      summary: Marketplace headline metrics
+      responses:
+        "200":
+          description: Overview
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsOverview"
+
+  /cities:
+    get:
+      operationId: listCities
+      tags: [cities]
+      summary: Cities with listing counts
+      responses:
+        "200":
+          description: Cities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CitySummary"
+
+  /inquiries:
+    post:
+      operationId: createInquiry
+      tags: [inquiries]
+      summary: Send a message to the seller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInquiry"
+      responses:
+        "201":
+          description: Inquiry recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Inquiry"
+
 components:
   schemas:
     HealthStatus:
       type: object
       properties:
-        status:
-          type: string
-      required:
-        - status
+        status: { type: string }
+      required: [status]
 
+    Listing:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        description: { type: string }
+        transaction:
+          type: string
+          enum: [sale, rent]
+        propertyType:
+          type: string
+          enum: [apartment, house, villa, riad, land, commercial, office, studio]
+        price: { type: integer, description: "Price in MAD" }
+        currency: { type: string, description: "ISO currency code", default: "MAD" }
+        city: { type: string }
+        neighborhood: { type: string }
+        address: { type: string }
+        bedrooms: { type: integer }
+        bathrooms: { type: integer }
+        area: { type: integer, description: "Surface area in square meters" }
+        images:
+          type: array
+          items: { type: string, description: "Image URL" }
+        features:
+          type: array
+          items: { type: string }
+        contactName: { type: string }
+        contactPhone: { type: string }
+        contactEmail: { type: string }
+        agencyName: { type: string, nullable: true }
+        featured: { type: boolean }
+        latitude: { type: number, nullable: true }
+        longitude: { type: number, nullable: true }
+        createdAt: { type: string, format: date-time }
+      required:
+        - id
+        - title
+        - description
+        - transaction
+        - propertyType
+        - price
+        - currency
+        - city
+        - neighborhood
+        - bedrooms
+        - bathrooms
+        - area
+        - images
+        - features
+        - contactName
+        - contactPhone
+        - contactEmail
+        - featured
+        - createdAt
+
+    CreateListing:
+      type: object
+      properties:
+        title: { type: string, minLength: 4 }
+        description: { type: string, minLength: 10 }
+        transaction:
+          type: string
+          enum: [sale, rent]
+        propertyType:
+          type: string
+          enum: [apartment, house, villa, riad, land, commercial, office, studio]
+        price: { type: integer, minimum: 0 }
+        city: { type: string }
+        neighborhood: { type: string }
+        address: { type: string }
+        bedrooms: { type: integer, minimum: 0 }
+        bathrooms: { type: integer, minimum: 0 }
+        area: { type: integer, minimum: 0 }
+        images:
+          type: array
+          items: { type: string }
+        features:
+          type: array
+          items: { type: string }
+        contactName: { type: string }
+        contactPhone: { type: string }
+        contactEmail: { type: string }
+        agencyName: { type: string, nullable: true }
+      required:
+        - title
+        - description
+        - transaction
+        - propertyType
+        - price
+        - city
+        - neighborhood
+        - bedrooms
+        - bathrooms
+        - area
+        - images
+        - contactName
+        - contactPhone
+        - contactEmail
+
+    ListingPage:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Listing"
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+      required: [items, total, limit, offset]
+
+    StatsOverview:
+      type: object
+      properties:
+        totalListings: { type: integer }
+        forSale: { type: integer }
+        forRent: { type: integer }
+        averageSalePrice: { type: integer }
+        averageRentPrice: { type: integer }
+        topCities:
+          type: array
+          items:
+            $ref: "#/components/schemas/CitySummary"
+        byType:
+          type: array
+          items:
+            $ref: "#/components/schemas/TypeBreakdown"
+      required: [totalListings, forSale, forRent, averageSalePrice, averageRentPrice, topCities, byType]
+
+    CitySummary:
+      type: object
+      properties:
+        city: { type: string }
+        listingsCount: { type: integer }
+        forSale: { type: integer }
+        forRent: { type: integer }
+        coverImage: { type: string, nullable: true }
+      required: [city, listingsCount, forSale, forRent]
+
+    TypeBreakdown:
+      type: object
+      properties:
+        propertyType: { type: string }
+        count: { type: integer }
+      required: [propertyType, count]
+
+    CreateInquiry:
+      type: object
+      properties:
+        listingId: { type: string }
+        name: { type: string, minLength: 2 }
+        email: { type: string, format: email }
+        phone: { type: string }
+        message: { type: string, minLength: 10 }
+      required: [listingId, name, email, phone, message]
+
+    Inquiry:
+      type: object
+      properties:
+        id: { type: string }
+        listingId: { type: string }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        message: { type: string }
+        createdAt: { type: string, format: date-time }
+      required: [id, listingId, name, email, phone, message, createdAt]
