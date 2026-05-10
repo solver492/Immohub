@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearch } from "wouter";
-import { Search, SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { fetchBiens } from "@/lib/supabase";
 import { Bien, MOROCCAN_CITIES, TYPE_BIEN_LABELS } from "@/lib/types";
@@ -12,6 +12,15 @@ const SORT_OPTIONS = [
   { value: "prix_asc", labelKey: "sort_price_asc" },
   { value: "prix_desc", labelKey: "sort_price_desc" },
   { value: "surface", labelKey: "sort_area" },
+];
+
+const DEMO_BIENS: Bien[] = [
+  { id: "d1", titre: "Villa prestige Palmeraie", type_bien: "villa", transaction: "vente", prix: 8500000, devise: "MAD", ville: "Marrakech", quartier: "Palmeraie", surface: 450, chambres: 5, salles_bain: 4, statut: "disponible", proprietaire_id: "demo", description: "" },
+  { id: "d2", titre: "Riad Médina rénovée", type_bien: "riad", transaction: "vente", prix: 3200000, devise: "MAD", ville: "Fès", quartier: "Médina", surface: 280, chambres: 4, salles_bain: 3, statut: "disponible", proprietaire_id: "demo", description: "" },
+  { id: "d3", titre: "Appartement vue mer", type_bien: "appartement", transaction: "vente", prix: 4200000, devise: "MAD", ville: "Tanger", quartier: "Malabata", surface: 180, chambres: 3, salles_bain: 2, statut: "disponible", proprietaire_id: "demo", description: "" },
+  { id: "d4", titre: "Studio meublé Gauthier", type_bien: "studio", transaction: "location", prix: 5500, devise: "MAD", ville: "Casablanca", quartier: "Gauthier", surface: 45, chambres: 1, salles_bain: 1, statut: "disponible", proprietaire_id: "demo", description: "" },
+  { id: "d5", titre: "Appartement Hay Riad", type_bien: "appartement", transaction: "location", prix: 8000, devise: "MAD", ville: "Rabat", quartier: "Hay Riad", surface: 90, chambres: 2, salles_bain: 2, statut: "disponible", proprietaire_id: "demo", description: "" },
+  { id: "d6", titre: "Villa Hivernage luxe", type_bien: "villa", transaction: "location", prix: 25000, devise: "MAD", ville: "Marrakech", quartier: "Hivernage", surface: 300, chambres: 4, salles_bain: 3, statut: "disponible", proprietaire_id: "demo", description: "" },
 ];
 
 export default function CataloguePage() {
@@ -32,9 +41,7 @@ export default function CataloguePage() {
   const [sort, setSort] = useState("recent");
 
   const communes = ville && MOROCCAN_CITIES[ville] ? MOROCCAN_CITIES[ville].communes : [];
-  const quartiers = commune && ville && MOROCCAN_CITIES[ville]?.quartiers[commune]
-    ? MOROCCAN_CITIES[ville].quartiers[commune]
-    : [];
+  const quartiers = commune && ville && MOROCCAN_CITIES[ville]?.quartiers[commune] ? MOROCCAN_CITIES[ville].quartiers[commune] : [];
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -47,47 +54,43 @@ export default function CataloguePage() {
       type_bien: typeBien !== "all" ? typeBien : undefined,
       sort,
     });
-    setBiens(data);
+    setBiens(data.length > 0 ? data : DEMO_BIENS);
     setLoading(false);
   }, [search, transaction, ville, commune, quartier, typeBien, sort]);
 
   useEffect(() => { load(); }, [load]);
 
   const resetFilters = () => {
-    setSearch("");
-    setTransaction("all");
-    setVille("");
-    setCommune("");
-    setQuartier("");
-    setTypeBien("all");
-    setSort("recent");
+    setSearch(""); setTransaction("all"); setVille(""); setCommune(""); setQuartier(""); setTypeBien("all"); setSort("recent");
   };
 
   const hasFilters = transaction !== "all" || ville || typeBien !== "all" || search;
 
   return (
-    <div className="min-h-screen gradient-bg pt-20">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="font-serif text-4xl font-bold text-white mb-2">
-            {t("nav_catalogue")}
-          </h1>
-          <div className="w-12 h-0.5 bg-gradient-to-r from-cyan-400 to-transparent" />
-          {biens.length > 0 && (
-            <p className="text-white/40 text-sm mt-2">{biens.length} {t("listings")} trouvées</p>
-          )}
-        </motion.div>
+    <div className="min-h-screen bg-[var(--page-bg)] transition-colors duration-300 pt-24 pb-20">
 
-        {/* Search + Filter Bar */}
-        <div className="glass-strong rounded-2xl p-4 mb-6">
+      {/* Hero band */}
+      <div className="bg-[var(--ink-text)] text-[var(--page-bg)] py-12 px-6 mb-10">
+        <div className="lux-container">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <p className="text-[0.68rem] font-medium tracking-[0.18em] uppercase opacity-50 mb-2">Explorer</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-medium">
+              {t("nav_catalogue")}
+            </h1>
+            {!loading && (
+              <p className="text-sm opacity-50 mt-2 font-light">{biens.length} propriétés trouvées</p>
+            )}
+          </motion.div>
+        </div>
+      </div>
+
+      <div className="lux-container px-6">
+        {/* Filter glass panel */}
+        <div className="glass-panel p-4 mb-8">
           <div className="flex flex-col md:flex-row gap-3">
+            {/* Search */}
             <div className="flex-1 relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-text)]" />
               <input
                 type="text"
                 value={search}
@@ -95,21 +98,21 @@ export default function CataloguePage() {
                 onKeyDown={(e) => e.key === "Enter" && load()}
                 placeholder={t("search_placeholder")}
                 data-testid="input-search-catalogue"
-                className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-cyan-400/50 transition-colors"
+                className="glass-input pl-9"
               />
             </div>
 
-            {/* Transaction Toggle */}
-            <div className="flex items-center gap-1 glass rounded-xl px-2">
+            {/* Transaction tabs */}
+            <div className="flex border border-[var(--glass-border)]">
               {["all", "vente", "location"].map((tx) => (
                 <button
                   key={tx}
                   onClick={() => setTransaction(tx)}
                   data-testid={`filter-tx-${tx}`}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                  className={`px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.1em] uppercase transition-all cursor-pointer ${
                     transaction === tx
-                      ? "bg-cyan-400 text-[#04060b] font-bold"
-                      : "text-white/60 hover:text-white"
+                      ? "bg-[var(--ink-text)] text-[var(--page-bg)]"
+                      : "text-[var(--muted-text)] hover:text-[var(--ink-text)]"
                   }`}
                 >
                   {tx === "all" ? t("all") : t(tx)}
@@ -117,113 +120,90 @@ export default function CataloguePage() {
               ))}
             </div>
 
+            {/* Filters toggle */}
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
               data-testid="button-filters-toggle"
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-4 py-2.5 text-[0.68rem] font-medium tracking-[0.1em] uppercase border transition-all cursor-pointer ${
                 filtersOpen || hasFilters
-                  ? "bg-cyan-400/20 text-cyan-400 border border-cyan-400/40"
-                  : "glass text-white/60 hover:text-white border border-white/10"
+                  ? "border-[var(--gold)] text-[var(--gold)]"
+                  : "border-[var(--glass-border)] text-[var(--muted-text)] hover:text-[var(--ink-text)]"
               }`}
             >
-              <SlidersHorizontal size={15} />
+              <SlidersHorizontal size={13} />
               Filtres
-              {hasFilters && <span className="bg-cyan-400 text-[#04060b] text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">!</span>}
+              {hasFilters && <span className="w-1.5 h-1.5 rounded-full bg-[var(--gold)]" />}
             </button>
 
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              data-testid="select-sort"
-              className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400/50 cursor-pointer min-w-[160px]"
-            >
-              {SORT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value} className="bg-[#04060b]">{t(o.labelKey)}</option>
-              ))}
-            </select>
+            {/* Sort */}
+            <div className="relative">
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                data-testid="select-sort"
+                className="glass-select pr-8 min-w-[160px]"
+              >
+                {SORT_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{t(o.labelKey)}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          {/* Advanced Filters */}
+          {/* Advanced filters */}
           {filtersOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mt-4 pt-4 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3"
+              className="mt-4 pt-4 border-t border-[var(--glass-border)] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4"
             >
-              {/* Ville */}
-              <div>
-                <label className="text-white/50 text-xs block mb-1">{t("filter_city")}</label>
-                <select
-                  value={ville}
-                  onChange={(e) => { setVille(e.target.value); setCommune(""); setQuartier(""); }}
-                  data-testid="select-ville"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-cyan-400/50 cursor-pointer"
-                >
-                  <option value="" className="bg-[#04060b]">Toutes</option>
-                  {Object.keys(MOROCCAN_CITIES).map((c) => (
-                    <option key={c} value={c} className="bg-[#04060b]">{c}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Commune */}
-              <div>
-                <label className="text-white/50 text-xs block mb-1">{t("filter_commune")}</label>
-                <select
-                  value={commune}
-                  onChange={(e) => { setCommune(e.target.value); setQuartier(""); }}
-                  data-testid="select-commune"
-                  disabled={!ville}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-cyan-400/50 cursor-pointer disabled:opacity-30"
-                >
-                  <option value="" className="bg-[#04060b]">Toutes</option>
-                  {communes.map((c) => (
-                    <option key={c} value={c} className="bg-[#04060b]">{c}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Quartier */}
-              <div>
-                <label className="text-white/50 text-xs block mb-1">{t("filter_quartier")}</label>
-                <select
-                  value={quartier}
-                  onChange={(e) => setQuartier(e.target.value)}
-                  data-testid="select-quartier"
-                  disabled={!commune}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-cyan-400/50 cursor-pointer disabled:opacity-30"
-                >
-                  <option value="" className="bg-[#04060b]">Tous</option>
-                  {quartiers.map((q) => (
-                    <option key={q} value={q} className="bg-[#04060b]">{q}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Type */}
-              <div>
-                <label className="text-white/50 text-xs block mb-1">{t("filter_type")}</label>
-                <select
-                  value={typeBien}
-                  onChange={(e) => setTypeBien(e.target.value)}
-                  data-testid="select-type-bien"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-cyan-400/50 cursor-pointer"
-                >
-                  <option value="all" className="bg-[#04060b]">Tous</option>
-                  {Object.entries(TYPE_BIEN_LABELS).map(([k, v]) => (
-                    <option key={k} value={k} className="bg-[#04060b]">{v}</option>
-                  ))}
-                </select>
-              </div>
-
+              {[
+                {
+                  label: t("filter_city"), value: ville,
+                  onChange: (v: string) => { setVille(v); setCommune(""); setQuartier(""); },
+                  options: Object.keys(MOROCCAN_CITIES).map((c) => ({ value: c, label: c })),
+                  testId: "select-ville", defaultLabel: "Toutes",
+                },
+                {
+                  label: t("filter_commune"), value: commune,
+                  onChange: (v: string) => { setCommune(v); setQuartier(""); },
+                  options: communes.map((c) => ({ value: c, label: c })),
+                  testId: "select-commune", defaultLabel: "Toutes", disabled: !ville,
+                },
+                {
+                  label: t("filter_quartier"), value: quartier,
+                  onChange: (v: string) => setQuartier(v),
+                  options: quartiers.map((q) => ({ value: q, label: q })),
+                  testId: "select-quartier", defaultLabel: "Tous", disabled: !commune,
+                },
+                {
+                  label: t("filter_type"), value: typeBien,
+                  onChange: (v: string) => setTypeBien(v),
+                  options: Object.entries(TYPE_BIEN_LABELS).map(([k, v]) => ({ value: k, label: v })),
+                  testId: "select-type-bien", defaultLabel: "Tous",
+                },
+              ].map(({ label, value, onChange, options, testId, defaultLabel, disabled }) => (
+                <div key={testId}>
+                  <label className="text-[0.64rem] font-medium tracking-[0.1em] uppercase text-[var(--muted-text)] block mb-1.5">{label}</label>
+                  <select
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    data-testid={testId}
+                    disabled={disabled}
+                    className="glass-select disabled:opacity-30"
+                  >
+                    <option value="">{defaultLabel}</option>
+                    {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+              ))}
               <div className="sm:col-span-2 md:col-span-4 flex justify-end">
                 <button
                   onClick={resetFilters}
                   data-testid="button-reset-filters"
-                  className="flex items-center gap-1 text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 text-[0.68rem] font-medium tracking-[0.1em] uppercase text-[var(--muted-text)] hover:text-[var(--ink-text)] transition-colors cursor-pointer"
                 >
-                  <X size={13} /> Réinitialiser les filtres
+                  <X size={12} /> Réinitialiser
                 </button>
               </div>
             </motion.div>
@@ -234,21 +214,14 @@ export default function CataloguePage() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="glass-card rounded-xl h-72 animate-pulse" />
+              <div key={i} className="h-72 bg-[var(--alt-bg)] animate-pulse" />
             ))}
           </div>
         ) : biens.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center py-24"
-          >
-            <Search size={48} className="text-white/20 mx-auto mb-4" />
-            <p className="text-white/50 text-lg">{t("no_results")}</p>
-            <button
-              onClick={resetFilters}
-              className="mt-4 text-sm text-cyan-400 hover:underline cursor-pointer"
-            >
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-24">
+            <Search size={40} className="text-[var(--muted-text)] mx-auto mb-4 opacity-30" />
+            <p className="text-[var(--muted-text)] text-lg font-serif">{t("no_results")}</p>
+            <button onClick={resetFilters} className="mt-6 btn-outline text-sm">
               Effacer les filtres
             </button>
           </motion.div>
@@ -259,7 +232,7 @@ export default function CataloguePage() {
                 key={bien.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i * 0.05, 0.5) }}
+                transition={{ delay: Math.min(i * 0.05, 0.4) }}
               >
                 <BienCard bien={bien} />
               </motion.div>
