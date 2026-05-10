@@ -1,55 +1,73 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "wouter";
-import { Search, ChevronDown, TrendingUp, Home, Building2, MapPin } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Search, ArrowRight, ChevronDown } from "lucide-react";
+import { motion } from "framer-motion";
 import { fetchBiens, countBiensByVille } from "@/lib/supabase";
 import { Bien, MOROCCAN_CITIES, TYPE_BIEN_LABELS } from "@/lib/types";
 import { useI18n } from "@/lib/i18n";
 import BienCard from "@/components/BienCard";
-import ParticleBackground from "@/components/ParticleBackground";
 
 const CITY_IMAGES: Record<string, string> = {
-  Tanger: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=600&q=80",
-  Casablanca: "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=600&q=80",
-  Rabat: "https://images.unsplash.com/photo-1563991655280-cb95c90ca2fb?w=600&q=80",
-  Marrakech: "https://images.unsplash.com/photo-1539020140153-e479b8bcd9cc?w=600&q=80",
-  Fès: "https://images.unsplash.com/photo-1572803787f25-0b4e4d4d7143?w=600&q=80",
-  Agadir: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=600&q=80",
+  Tanger: "https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=800&q=80",
+  Casablanca: "https://images.unsplash.com/photo-1577717903315-1691ae25ab3f?w=800&q=80",
+  Rabat: "https://images.unsplash.com/photo-1563991655280-cb95c90ca2fb?w=800&q=80",
+  Marrakech: "https://images.unsplash.com/photo-1539020140153-e479b8bcd9cc?w=800&q=80",
+  Fès: "https://images.unsplash.com/photo-1572803787f25-0b4e4d4d7143?w=800&q=80",
+  Agadir: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=800&q=80",
 };
+
+const HERO_IMAGE = "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=85";
 
 const DEMO_BIENS: Bien[] = [
   {
-    id: "demo-1", titre: "Villa d'exception avec piscine", description: "Magnifique villa avec vue panoramique", type_bien: "villa",
+    id: "demo-1", titre: "Villa d'exception avec piscine — Palmeraie", description: "Magnifique villa avec vue panoramique", type_bien: "villa",
     transaction: "vente", prix: 8500000, devise: "MAD", ville: "Marrakech", quartier: "Palmeraie", surface: 450, chambres: 5, salles_bain: 4, statut: "disponible", proprietaire_id: "demo",
   },
   {
-    id: "demo-2", titre: "Riad authentique Médina", description: "Riad rénové au coeur de la médina", type_bien: "riad",
+    id: "demo-2", titre: "Riad authentique en médina rénovée", description: "Riad rénové au coeur de la médina", type_bien: "riad",
     transaction: "vente", prix: 3200000, devise: "MAD", ville: "Fès", quartier: "Médina", surface: 280, chambres: 4, salles_bain: 3, statut: "disponible", proprietaire_id: "demo",
   },
   {
-    id: "demo-3", titre: "Appartement vue mer Malabata", description: "Somptueux appartement avec vue imprenable sur le détroit", type_bien: "appartement",
+    id: "demo-3", titre: "Appartement vue détroit — Malabata", description: "Somptueux appartement avec vue imprenable", type_bien: "appartement",
     transaction: "vente", prix: 4200000, devise: "MAD", ville: "Tanger", quartier: "Malabata", surface: 180, chambres: 3, salles_bain: 2, statut: "disponible", proprietaire_id: "demo",
   },
 ];
 
 const DEMO_LOCATIONS: Bien[] = [
   {
-    id: "demo-l1", titre: "Studio meublé Gauthier", description: "Studio moderne entièrement meublé", type_bien: "studio",
+    id: "demo-l1", titre: "Studio meublé — Gauthier", description: "Studio moderne entièrement meublé", type_bien: "studio",
     transaction: "location", prix: 5500, devise: "MAD", ville: "Casablanca", quartier: "Gauthier", surface: 45, chambres: 1, salles_bain: 1, statut: "disponible", proprietaire_id: "demo",
   },
   {
-    id: "demo-l2", titre: "Appartement Hay Riad", description: "Bel appartement dans résidence sécurisée", type_bien: "appartement",
+    id: "demo-l2", titre: "Appartement dans résidence sécurisée", description: "Bel appartement dans résidence sécurisée", type_bien: "appartement",
     transaction: "location", prix: 8000, devise: "MAD", ville: "Rabat", quartier: "Hay Riad", surface: 90, chambres: 2, salles_bain: 2, statut: "disponible", proprietaire_id: "demo",
   },
   {
-    id: "demo-l3", titre: "Villa Hivernage luxe", description: "Villa de luxe dans le quartier chic", type_bien: "villa",
+    id: "demo-l3", titre: "Villa prestige — Hivernage", description: "Villa de luxe dans le quartier chic", type_bien: "villa",
     transaction: "location", prix: 25000, devise: "MAD", ville: "Marrakech", quartier: "Hivernage", surface: 300, chambres: 4, salles_bain: 3, statut: "disponible", proprietaire_id: "demo",
   },
   {
-    id: "demo-l4", titre: "Bureau centre Agdal", description: "Espace de bureau professionnel", type_bien: "bureau",
+    id: "demo-l4", titre: "Bureau centre ville — Agdal", description: "Espace de bureau professionnel", type_bien: "bureau",
     transaction: "location", prix: 12000, devise: "MAD", ville: "Rabat", quartier: "Agdal", surface: 120, chambres: 0, salles_bain: 1, statut: "disponible", proprietaire_id: "demo",
   },
 ];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: (i = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.8, delay: i * 0.12, ease: [0.25, 0.46, 0.45, 0.94] } }),
+};
+const fadeIn = {
+  hidden: { opacity: 0 },
+  show: (i = 0) => ({ opacity: 1, transition: { duration: 1.0, delay: i * 0.1, ease: "easeOut" } }),
+};
+
+function useReveal() {
+  return {
+    initial: "hidden",
+    whileInView: "show",
+    viewport: { once: true, amount: 0.2 },
+  };
+}
 
 export default function HomePage() {
   const { t } = useI18n();
@@ -61,8 +79,9 @@ export default function HomePage() {
   const [prestigeBiens, setPrestigeBiens] = useState<Bien[]>([]);
   const [locationBiens, setLocationBiens] = useState<Bien[]>([]);
   const [cityCounts, setCityCounts] = useState<Record<string, { total: number; vente: number; location: number }>>({});
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(325);
   const [loading, setLoading] = useState(true);
+  const reveal = useReveal();
 
   useEffect(() => {
     async function load() {
@@ -72,11 +91,8 @@ export default function HomePage() {
         fetchBiens({ transaction: "location", sort: "recent" }),
         countBiensByVille(),
       ]);
-
-      const displayPrestige = prestige.length > 0 ? prestige.slice(0, 3) : DEMO_BIENS;
-      const displayLocs = locs.length > 0 ? locs.slice(0, 4) : DEMO_LOCATIONS;
-      setPrestigeBiens(displayPrestige);
-      setLocationBiens(displayLocs);
+      setPrestigeBiens(prestige.length > 0 ? prestige.slice(0, 3) : DEMO_BIENS);
+      setLocationBiens(locs.length > 0 ? locs.slice(0, 4) : DEMO_LOCATIONS);
       setCityCounts(Object.keys(counts).length > 0 ? counts : {
         Tanger: { total: 48, vente: 30, location: 18 },
         Casablanca: { total: 124, vente: 75, location: 49 },
@@ -101,65 +117,71 @@ export default function HomePage() {
   const cityList = Object.keys(MOROCCAN_CITIES);
 
   return (
-    <div className="min-h-screen gradient-bg">
-      {/* Hero */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 text-center overflow-hidden">
-        <ParticleBackground />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#04060b]" />
+    <div className="lux-bg min-h-screen">
 
+      {/* ── HERO ── */}
+      <section className="relative h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden">
+        {/* Background image */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="relative z-10 max-w-4xl"
+          className="absolute inset-0"
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.6, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-cyan-400 text-sm font-medium mb-8 border border-cyan-400/20"
-          >
-            <TrendingUp size={14} />
-            <span>{totalCount}+ annonces disponibles</span>
-          </motion.div>
+          <img src={HERO_IMAGE} alt="Propriété de luxe au Maroc" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
+        </motion.div>
 
-          <h1 className="font-serif text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+        {/* Hero content */}
+        <div className="relative z-10 text-center text-white px-6 max-w-5xl mx-auto">
+          <motion.p
+            variants={fadeIn} initial="hidden" animate="show" custom={0}
+            className="overline-label text-white/70 mb-6"
+          >
+            Portail Immobilier Premium · Maroc
+          </motion.p>
+
+          <motion.h1
+            variants={fadeUp} initial="hidden" animate="show" custom={1}
+            className="serif-display text-white text-5xl md:text-7xl lg:text-8xl mb-8 leading-[1.06]"
+          >
             {t("hero_title")}{" "}
-            <span className="neon-text">{t("hero_title2")}</span>
-          </h1>
+            <em className="italic font-normal">{t("hero_title2")}</em>
+          </motion.h1>
 
-          <p className="text-white/60 text-lg md:text-xl mb-12 max-w-2xl mx-auto">
-            {t("hero_sub")}
-          </p>
-
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-            className="glass-strong rounded-2xl p-4 md:p-6 max-w-3xl mx-auto"
+          <motion.p
+            variants={fadeUp} initial="hidden" animate="show" custom={2}
+            className="text-white/70 text-base md:text-lg font-light mb-12 max-w-xl mx-auto leading-relaxed"
           >
-            {/* Transaction Toggle */}
-            <div className="flex gap-2 mb-4">
+            {t("hero_sub")}
+          </motion.p>
+
+          {/* Search bar */}
+          <motion.div
+            variants={fadeUp} initial="hidden" animate="show" custom={3}
+            className="bg-white/95 backdrop-blur-sm max-w-3xl mx-auto"
+          >
+            {/* Transaction tabs */}
+            <div className="flex border-b border-[#e8e3dc]">
               {["all", "vente", "location"].map((tx) => (
                 <button
                   key={tx}
                   onClick={() => setTransaction(tx)}
                   data-testid={`filter-transaction-${tx}`}
-                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer ${
+                  className={`flex-1 py-3 text-[0.68rem] font-medium tracking-[0.12em] uppercase transition-all cursor-pointer ${
                     transaction === tx
-                      ? "bg-cyan-400 text-[#04060b] font-bold"
-                      : "glass text-white/60 hover:text-white border border-white/10"
+                      ? "text-[#1a1a1a] border-b-2 border-[#1a1a1a] -mb-px"
+                      : "text-[#b5aca0] hover:text-[#1a1a1a]"
                   }`}
                 >
                   {tx === "all" ? t("all") : t(tx)}
                 </button>
               ))}
             </div>
-
-            <div className="flex flex-col md:flex-row gap-3">
-              <div className="flex-1 relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" />
+            {/* Inputs */}
+            <div className="flex flex-col md:flex-row items-stretch gap-0 px-6 py-5">
+              <div className="flex-1 flex items-center gap-3 pr-6 border-r border-[#e8e3dc]">
+                <Search size={14} className="text-[#b5aca0] flex-shrink-0" />
                 <input
                   type="text"
                   value={search}
@@ -167,208 +189,232 @@ export default function HomePage() {
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   placeholder={t("search_placeholder")}
                   data-testid="input-search"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-cyan-400/50 transition-colors"
+                  className="lux-input border-none py-0 text-sm"
                 />
               </div>
-              <select
-                value={cityFilter}
-                onChange={(e) => setCityFilter(e.target.value)}
-                data-testid="select-city"
-                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400/50 transition-colors cursor-pointer min-w-[150px]"
-              >
-                <option value="" className="bg-[#04060b]">{t("filter_city")}</option>
-                {cityList.map((c) => (
-                  <option key={c} value={c} className="bg-[#04060b]">{c}</option>
-                ))}
-              </select>
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                data-testid="select-type"
-                className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-400/50 transition-colors cursor-pointer min-w-[150px]"
-              >
-                <option value="all" className="bg-[#04060b]">{t("filter_type")}</option>
-                {Object.entries(TYPE_BIEN_LABELS).map(([k, v]) => (
-                  <option key={k} value={k} className="bg-[#04060b]">{v}</option>
-                ))}
-              </select>
-              <button
-                onClick={handleSearch}
-                data-testid="button-search"
-                className="glow-btn px-6 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 whitespace-nowrap"
-              >
-                <Search size={15} /> Rechercher
-              </button>
+              <div className="md:px-6 md:border-r border-[#e8e3dc] py-2 md:py-0">
+                <select
+                  value={cityFilter}
+                  onChange={(e) => setCityFilter(e.target.value)}
+                  data-testid="select-city"
+                  className="lux-select border-none py-0 min-w-[120px]"
+                >
+                  <option value="">{t("filter_city")}</option>
+                  {cityList.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="md:px-6 md:border-r border-[#e8e3dc] py-2 md:py-0">
+                <select
+                  value={typeFilter}
+                  onChange={(e) => setTypeFilter(e.target.value)}
+                  data-testid="select-type"
+                  className="lux-select border-none py-0 min-w-[140px]"
+                >
+                  <option value="all">{t("filter_type")}</option>
+                  {Object.entries(TYPE_BIEN_LABELS).map(([k, v]) => (
+                    <option key={k} value={k}>{v}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="md:pl-6 pt-3 md:pt-0">
+                <button
+                  onClick={handleSearch}
+                  data-testid="button-search"
+                  className="btn-fill w-full md:w-auto whitespace-nowrap"
+                >
+                  <Search size={13} /> Rechercher
+                </button>
+              </div>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
-          <ChevronDown size={24} className="text-white/30" />
+        {/* Scroll indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2">
+          <span className="text-white/40 text-[0.6rem] tracking-[0.2em] uppercase">Défiler</span>
+          <div className="w-px h-8 bg-white/30 relative overflow-hidden">
+            <div className="scroll-dot absolute top-0 left-0 right-0 h-4 bg-white/60" />
+          </div>
         </div>
       </section>
 
-      {/* Stats Bar */}
-      <section className="py-10 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      {/* ── STATS BAR ── */}
+      <section className="border-b border-[#e8e3dc] bg-white">
+        <div className="lux-container">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-[#e8e3dc]">
             {[
-              { icon: Home, label: "Biens disponibles", value: totalCount.toString() + "+" },
-              { icon: Building2, label: "Villes couvertes", value: Object.keys(cityCounts).length.toString() || "12" },
-              { icon: TrendingUp, label: "Ventes ce mois", value: "48" },
-              { icon: MapPin, label: "Quartiers", value: "200+" },
-            ].map(({ icon: Icon, label, value }, i) => (
+              { value: `${totalCount}+`, label: "Biens disponibles" },
+              { value: Object.keys(cityCounts).length || "12", label: "Villes couvertes" },
+              { value: "48", label: "Ventes ce mois" },
+              { value: "200+", label: "Quartiers" },
+            ].map(({ value, label }, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="glass-card rounded-xl p-5 text-center"
+                {...reveal}
+                variants={fadeUp}
+                custom={i}
+                className="py-10 px-8 text-center"
                 data-testid={`stat-card-${i}`}
               >
-                <Icon size={22} className="text-cyan-400 mx-auto mb-2" />
-                <p className="text-2xl font-bold neon-text">{value}</p>
-                <p className="text-white/50 text-xs mt-1">{label}</p>
+                <p className="stat-number mb-2">{value}</p>
+                <p className="text-[0.72rem] font-medium tracking-[0.1em] uppercase text-[#b5aca0]">{label}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Prestige Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center justify-between mb-10"
-          >
-            <div>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-white">
+      {/* ── PRESTIGE SECTION ── */}
+      <section className="lux-section">
+        <div className="lux-container">
+          {/* Header */}
+          <div className="flex items-end justify-between mb-16">
+            <motion.div {...reveal} variants={fadeUp}>
+              <span className="rule" />
+              <p className="overline-label mb-3">Sélection prestige</p>
+              <h2 className="serif-display text-4xl md:text-5xl">
                 {t("prestige_section")}
               </h2>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-cyan-400 to-transparent mt-2" />
-            </div>
-            <button
+            </motion.div>
+            <motion.button
+              {...reveal} variants={fadeIn}
               onClick={() => setLocation("/biens?transaction=vente")}
-              className="text-sm text-cyan-400/70 hover:text-cyan-400 transition-colors"
               data-testid="button-view-all-vente"
+              className="hidden md:flex items-center gap-2 text-[0.72rem] font-medium tracking-[0.1em] uppercase text-[#1a1a1a] hover:text-[#b5aca0] transition-colors cursor-pointer"
             >
-              Voir tout →
-            </button>
-          </motion.div>
+              Voir tout <ArrowRight size={14} />
+            </motion.button>
+          </div>
 
+          {/* Asymmetric Grid — editorial layout */}
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card rounded-2xl h-80 animate-pulse" />
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+              <div className="md:col-span-7 h-[420px] bg-[#f0ece6] animate-pulse" />
+              <div className="md:col-span-5 grid grid-rows-2 gap-4 md:gap-6">
+                <div className="h-[200px] bg-[#f0ece6] animate-pulse" />
+                <div className="h-[200px] bg-[#f0ece6] animate-pulse" />
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {prestigeBiens.map((bien, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6">
+              {/* Large featured card */}
+              {prestigeBiens[0] && (
                 <motion.div
-                  key={bien.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.15 }}
+                  {...reveal} variants={fadeUp} custom={0}
+                  className="md:col-span-7"
                 >
-                  <BienCard bien={bien} prestige />
+                  <BienCard bien={prestigeBiens[0]} large />
                 </motion.div>
-              ))}
+              )}
+              {/* Two stacked smaller cards */}
+              <div className="md:col-span-5 grid grid-rows-2 gap-4 md:gap-6">
+                {prestigeBiens.slice(1, 3).map((bien, i) => (
+                  <motion.div key={bien.id} {...reveal} variants={fadeUp} custom={i + 1}>
+                    <BienCard bien={bien} />
+                  </motion.div>
+                ))}
+              </div>
             </div>
           )}
+
+          {/* Mobile "see all" */}
+          <div className="mt-10 flex justify-center md:hidden">
+            <button
+              onClick={() => setLocation("/biens?transaction=vente")}
+              className="btn-outline"
+            >
+              Voir tout <ArrowRight size={13} />
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* Location Section */}
-      <section className="py-16 px-4 bg-gradient-to-b from-transparent via-violet-950/10 to-transparent">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex items-center justify-between mb-10"
-          >
-            <div>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-white">
+      {/* ── EDITORIAL SEPARATOR ── */}
+      <div className="lux-container">
+        <div className="rule-full" />
+      </div>
+
+      {/* ── LOCATIONS SECTION ── */}
+      <section className="lux-section">
+        <div className="lux-container">
+          <div className="flex items-end justify-between mb-16">
+            <motion.div {...reveal} variants={fadeUp}>
+              <span className="rule" style={{ background: "#b5aca0" }} />
+              <p className="overline-label mb-3">À louer</p>
+              <h2 className="serif-display text-4xl md:text-5xl">
                 {t("location_section")}
               </h2>
-              <div className="w-16 h-0.5 bg-gradient-to-r from-violet-400 to-transparent mt-2" />
-            </div>
-            <button
+            </motion.div>
+            <motion.button
+              {...reveal} variants={fadeIn}
               onClick={() => setLocation("/biens?transaction=location")}
-              className="text-sm text-violet-400/70 hover:text-violet-400 transition-colors"
               data-testid="button-view-all-location"
+              className="hidden md:flex items-center gap-2 text-[0.72rem] font-medium tracking-[0.1em] uppercase text-[#1a1a1a] hover:text-[#b5aca0] transition-colors cursor-pointer"
             >
-              Voir tout →
-            </button>
-          </motion.div>
+              Voir tout <ArrowRight size={14} />
+            </motion.button>
+          </div>
 
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => <div key={i} className="glass-card rounded-xl h-64 animate-pulse" />)}
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-[320px] bg-[#f0ece6] animate-pulse" />
+              ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {locationBiens.map((bien, i) => (
-                <motion.div
-                  key={bien.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                >
+                <motion.div key={bien.id} {...reveal} variants={fadeUp} custom={i}>
                   <BienCard bien={bien} />
                 </motion.div>
               ))}
             </div>
           )}
+
+          <div className="mt-10 flex justify-center md:hidden">
+            <button onClick={() => setLocation("/biens?transaction=location")} className="btn-outline">
+              Voir tout <ArrowRight size={13} />
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* Cities Section */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-10"
-          >
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white">
-              {t("cities_section")}
-            </h2>
-            <div className="w-16 h-0.5 bg-gradient-to-r from-cyan-400 to-transparent mt-2" />
-          </motion.div>
+      {/* ── CITIES SECTION ── */}
+      <section className="lux-section bg-[#1a1a1a] text-white">
+        <div className="lux-container">
+          <div className="flex items-end justify-between mb-16">
+            <motion.div {...reveal} variants={fadeUp}>
+              <span className="rule" />
+              <p className="overline-label text-[#b5aca0] mb-3">Explorer</p>
+              <h2 className="serif-display text-white text-4xl md:text-5xl">
+                {t("cities_section")}
+              </h2>
+            </motion.div>
+          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Asymmetric city grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {Object.keys(MOROCCAN_CITIES).slice(0, 4).map((city, i) => {
-              const counts = cityCounts[city] || { total: 0, vente: 0, location: 0 };
+              const counts = cityCounts[city] || { total: 0 };
+              const isLarge = i === 0;
               return (
                 <motion.button
                   key={city}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
+                  {...reveal} variants={fadeUp} custom={i}
                   onClick={() => setLocation(`/biens?ville=${city}`)}
                   data-testid={`city-card-${city}`}
-                  className="relative rounded-2xl overflow-hidden h-48 group cursor-pointer text-left"
+                  className={`city-card text-left ${isLarge ? "md:col-span-2 h-[320px]" : "h-[220px]"}`}
                 >
                   <img
                     src={CITY_IMAGES[city] || "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80"}
                     alt={city}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="absolute inset-0 border border-cyan-400/0 group-hover:border-cyan-400/30 rounded-2xl transition-all duration-300" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="font-serif text-white font-semibold text-lg">{city}</p>
-                    <p className="text-white/50 text-xs">{counts.total || "—"} {t("listings")}</p>
+                  <div className="city-card-overlay" />
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <p className="font-serif text-white text-xl font-medium mb-1">{city}</p>
+                    <p className="text-white/50 text-[0.68rem] tracking-[0.1em] uppercase">
+                      {counts.total || "—"} {t("listings")}
+                    </p>
                   </div>
                 </motion.button>
               );
@@ -377,42 +423,48 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Banner */}
-      <section className="py-20 px-4">
-        <div className="max-w-3xl mx-auto text-center">
+      {/* ── CTA BANNER ── */}
+      <section className="lux-section bg-[#f5f3ef]">
+        <div className="lux-container">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="glass-strong rounded-3xl p-12 neon-border"
+            {...reveal} variants={fadeUp}
+            className="max-w-3xl mx-auto text-center"
           >
-            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-4">
-              Vous avez un bien à vendre ou louer ?
+            <span className="rule mx-auto" />
+            <p className="overline-label mb-6">Propriétaires</p>
+            <h2 className="serif-display text-4xl md:text-5xl mb-6 leading-tight">
+              Vous avez un bien<br />
+              <em className="italic font-normal">à vendre ou louer ?</em>
             </h2>
-            <p className="text-white/60 mb-8">
-              Rejoignez les centaines de propriétaires qui nous font confiance.
+            <p className="text-[#b5aca0] text-base font-light mb-10 leading-relaxed">
+              Rejoignez les centaines de propriétaires qui nous font confiance.<br />
+              Publiez votre annonce en quelques minutes.
             </p>
             <button
               onClick={() => setLocation("/publier")}
               data-testid="button-cta-publish"
-              className="glow-btn px-8 py-4 rounded-2xl font-semibold text-lg"
+              className="btn-fill text-sm px-10 py-4"
             >
-              {t("cta_publish")}
+              {t("cta_publish")} <ArrowRight size={14} />
             </button>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-10 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <span className="font-serif text-lg font-bold neon-text tracking-widest">
-            MOVIA<span className="text-white/40 font-light"> IMMO</span>
-          </span>
-          <p className="text-white/30 text-sm">© 2026 Movia Immo — Le portail immobilier premium du Maroc</p>
-          <div className="flex items-center gap-4 text-white/30 text-sm">
-            <span className="hover:text-white/60 cursor-pointer transition-colors">Mentions légales</span>
-            <span className="hover:text-white/60 cursor-pointer transition-colors">Contact</span>
+      {/* ── FOOTER ── */}
+      <footer className="border-t border-[#e8e3dc] bg-white">
+        <div className="lux-container py-12">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <span className="font-serif text-[1.1rem] font-medium tracking-[0.18em] uppercase text-[#1a1a1a]">
+              Movia <span className="opacity-40 font-light">Immo</span>
+            </span>
+            <p className="text-[0.72rem] font-medium tracking-[0.08em] uppercase text-[#b5aca0]">
+              © 2026 Movia Immo — Le portail immobilier premium du Maroc
+            </p>
+            <div className="flex items-center gap-6 text-[0.72rem] font-medium tracking-[0.08em] uppercase text-[#b5aca0]">
+              <span className="hover:text-[#1a1a1a] cursor-pointer transition-colors">Mentions légales</span>
+              <span className="hover:text-[#1a1a1a] cursor-pointer transition-colors">Contact</span>
+            </div>
           </div>
         </div>
       </footer>
