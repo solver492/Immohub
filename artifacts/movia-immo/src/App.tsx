@@ -2,27 +2,28 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { I18nProvider } from "@/lib/i18n";
+import Navbar from "@/components/Navbar";
+import HomePage from "@/pages/Home";
+import CataloguePage from "@/pages/Catalogue";
+import BienDetailPage from "@/pages/BienDetail";
+import PublierPage from "@/pages/Publier";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
 
-function Home() {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">Replit Agent is building...</h1>
-        <p className="mt-2 text-sm text-gray-600">Your app will appear here once it's ready.</p>
-      </div>
-    </div>
-  );
-}
-
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
+    <>
+      <Navbar />
+      <Switch>
+        <Route path="/" component={HomePage} />
+        <Route path="/biens" component={CataloguePage} />
+        <Route path="/bien/:id" component={BienDetailPage} />
+        <Route path="/publier" component={PublierPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 
@@ -30,10 +31,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-        <Toaster />
+        <I18nProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+          <Toaster />
+        </I18nProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

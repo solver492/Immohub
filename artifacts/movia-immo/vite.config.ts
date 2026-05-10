@@ -28,6 +28,10 @@ if (!basePath) {
 
 export default defineConfig({
   base: basePath,
+  define: {
+    "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(process.env.SUPABASE_ANON_KEY || ""),
+    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify("https://ozeymwhxwxydqcdcidbz.supabase.co"),
+  },
   plugins: [
     react(),
     tailwindcss(),

@@ -1,0 +1,25 @@
+{
+  "name": "Movia Immo",
+  "short_name": "Movia",
+  "description": "Le portail immobilier premium du Maroc",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#04060b",
+  "background_color": "#04060b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/initials/svg?seed=MI&backgroundColor=00e5ff&textColor=04060b",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/initials/svg?seed=MI&backgroundColor=00e5ff&textColor=04060b",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["real-estate", "business"],
+  "lang": "fr"
+}
