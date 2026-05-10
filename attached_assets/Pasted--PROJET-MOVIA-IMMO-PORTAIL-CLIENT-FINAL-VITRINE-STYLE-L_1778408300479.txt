@@ -1,0 +1,39 @@
+# PROJET : MOVIA IMMO - PORTAIL CLIENT FINAL (VITRINE)
+# STYLE : LIQUID GLASSMORPHISM LUXE
+# TECH : REACT + TAILWIND V4 + SUPABASE (REALTIME)
+
+## 1. VISION & SYNC BACKEND
+Tu construis le portail public final de Movia Immo. Ce portail doit être strictement synchronisé avec ma base de données Supabase existante.
+- **Source de données :** Table `biens` (uniquement les entrées où `statut = 'disponible'`).
+- **Flux :** Les données arrivent via l'Agent OpenClaw dans le CRM, sont validées, puis s'affichent ICI instantanément.
+
+## 2. DESIGN SYSTÈME (LIQUID GLASS)
+- **Ambiance :** Dark Premium (#04060b). Utilise des effets de flou (`backdrop-blur-xl`) et des bordures "frosted glass".
+- **Composants :** Cartes de biens avec reflets cyan néon. Icônes "Liquides" (Lucide-React) pour les caractéristiques (chambres, m², ville).
+- **Navigation :** Menu flottant élégant avec sélecteur de langue (AR, FR, EN, ES) et bouton "Publier mon bien".
+
+## 3. ARCHITECTURE GÉOGRAPHIQUE MAROCAINE
+Le moteur de recherche doit être le plus précis du marché :
+- **Filtre Intelligent :** Liste déroulante multi-niveaux : VILLE -> COMMUNE -> QUARTIER.
+- **Villes prioritaires :** Tanger, Rabat, Casablanca, Marrakech (avec tous leurs quartiers locaux comme Malabata, Hay Riad, Gauthier, Hivernage).
+- **Recherche :** Barre de recherche "Intelligente" avec auto-complétion et filtres avancés (Vente vs Location).
+
+## 4. MODULES & UX
+### A. Galerie d'Exploration :
+- Grille de biens avec animations fluides à l'entrée.
+- Section **"VENTE PRESTIGE"** : Un design ultra-élégant avec de grandes images pour les villas et appartements de luxe.
+- Section **"LOCATION DYNAMIQUE"** : Liste claire et rapide pour les locations urbaines.
+
+### B. Fiche Bien Immersive :
+- Visualisation grand format du contenu de l'annonce (Photos issues de la table `medias`).
+- **Bouton WhatsApp Flottant :** Intégré sur chaque annonce pour "Réserver une visite". Le message pré-rempli doit inclure l'ID et le titre du bien.
+
+### C. Module "Devenir Vendeur" :
+- Formulaire élégant "Publier chez nous" qui envoie les données directement dans la table `radar` de mon Supabase.
+
+## 5. CAPABILITÉS PWA (MOBILE FIRST)
+- **Adaptabilité :** 100% responsive (optimisé pour iPhone, Android et tablettes).
+- **Mode App :** Configure le manifest pour que le portail se propose en tant qu'application installable (PWA). Ajoute un bouton "Installer Movia App" discret dans le profil.
+
+## 6. LOGIQUE DE VALIDATION
+Affiche uniquement les biens dont le `proprietaire_id` est valide et dont la `date_mise_a_jour` est récente. L'affichage doit être instantané dès que je valide une annonce dans mon CRM (via Supabase Realtime).
