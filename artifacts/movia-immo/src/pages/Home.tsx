@@ -103,13 +103,12 @@ function SplitHero({ onSearch }: { onSearch: (p: URLSearchParams) => void }) {
           </h2>
           <button
             onClick={() => setLocation("/biens?transaction=location")}
-            className="flex items-center gap-2 px-6 py-3 bg-white text-[#1a1a1a] text-[0.72rem] font-medium tracking-[0.1em] uppercase transition-all hover:bg-[var(--gold)] hover:text-white cursor-pointer"
+            className="flex items-center gap-2 px-6 py-3 bg-white text-[#1a1a1a] text-[0.72rem] font-medium tracking-[0.1em] uppercase transition-all hover:bg-[var(--gold)] hover:text-white cursor-pointer border-t-[3px] border-r-[3px] border-b-[3px] border-l-[3px] rounded-tl-[6px] rounded-tr-[6px] rounded-br-[6px] rounded-bl-[6px] ml-[6px] mr-[6px] pt-[22px] pb-[22px]"
           >
             Voir les locations <ArrowRight size={13} />
           </button>
         </motion.div>
       </div>
-
       {/* ── Right panel: Vente ── */}
       <div
         className="hero-split-panel right-0"
@@ -140,13 +139,11 @@ function SplitHero({ onSearch }: { onSearch: (p: URLSearchParams) => void }) {
           </button>
         </motion.div>
       </div>
-
       {/* ── Vertical divider line ── */}
       <div
         className="absolute top-0 bottom-0 w-px bg-white/30 z-10 transition-all duration-500"
         style={{ left: `${leftW}%` }}
       />
-
       {/* ── Center overlay: title + search ── */}
       <div className="absolute inset-0 z-20 flex flex-col items-center justify-center px-4 pointer-events-none">
         {/* Glass title badge */}
@@ -242,7 +239,6 @@ function SplitHero({ onSearch }: { onSearch: (p: URLSearchParams) => void }) {
           </div>
         </motion.div>
       </div>
-
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-none">
         <span className="text-white/40 text-[0.58rem] tracking-[0.2em] uppercase">Défiler</span>
