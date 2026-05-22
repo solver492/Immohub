@@ -136,7 +136,7 @@ export default function Home() {
               <p className="text-sm text-primary-foreground/70 uppercase tracking-wider mt-1">À louer</p>
             </div>
             <div>
-              <p className="text-3xl font-bold font-serif">{stats.topCities.length}</p>
+              <p className="text-3xl font-bold font-serif">{stats.topCities?.length ?? 0}</p>
               <p className="text-sm text-primary-foreground/70 uppercase tracking-wider mt-1">Villes couvertes</p>
             </div>
           </div>
